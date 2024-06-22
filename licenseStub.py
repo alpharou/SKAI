@@ -1,14 +1,4 @@
-# SKAI
-SudoKu AI
-
-Train a model to generate a valid sudoku solve for a given feasible grid.
-
-I know, it's certainly NOT AI since in doesn't even respond dynamically, but
-the name of the project is much more appropiate than "Another Sudoku Solver"
-when taking into account the shortened version.
-
-# LICENSE
-# README.md file for the project
+# Header comment to assert the GNU GP License
 # Copyright (C) 2024 Álvaro L.G.
 
 # This program is free software: you can redistribute it and/or modify
