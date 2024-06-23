@@ -9,6 +9,7 @@ when taking into account the shortened version.
 
 # LICENSE
 README.md file for the project
+
 Copyright (C) 2024 Álvaro L.G.
 
 This program is free software: you can redistribute it and/or modify
