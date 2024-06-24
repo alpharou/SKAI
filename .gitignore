@@ -125,8 +125,10 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.micromamba
 .env
 .venv
+.conda
 env/
 venv/
 ENV/
