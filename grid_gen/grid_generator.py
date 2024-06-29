@@ -113,104 +113,45 @@ incidence = [
 	[8, 17, 26, 35, 44, 53, 60, 61, 62, 69, 70, 71, 72,73,74,75,76,77,78,79,80]
 ]
 
-def stochastic_generate_board(seed: int = 1):
-	rng.seed(seed)
-	#TODO Find out the best way to pack the info. Available digit, written digit, and tried digits. I suspect the best way is to use a python dynamic list instead of a numpy array
-	board_numeric = np.zeros(shape=(9,9),dtype=int)
-	#TODO Remove the board_categorical approach and use a 81x?? array that holds all the available digits serialized row first. That way, using an incidence lookup table, cells can be updated directly without computing the row, col and box indices.
-	available = [1,2,3,4,5,6,7,8,9]
-	board_categorical = {
-		'available_in_row': {
-			0:available.copy(),
-			1:available.copy(),
-			2:available.copy(),
-			3:available.copy(),
-			4:available.copy(),
-			5:available.copy(),
-			6:available.copy(),
-			7:available.copy(),
-			8:available.copy(),
-		},
-		'available_in_col': {
-			0:available.copy(),
-			1:available.copy(),
-			2:available.copy(),
-			3:available.copy(),
-			4:available.copy(),
-			5:available.copy(),
-			6:available.copy(),
-			7:available.copy(),
-			8:available.copy(),
-		},
-		'available_in_box': {
-			0:available.copy(),
-			1:available.copy(),
-			2:available.copy(),
-			3:available.copy(),
-			4:available.copy(),
-			5:available.copy(),
-			6:available.copy(),
-			7:available.copy(),
-			8:available.copy(),
-		}
-	}
+template_board = [1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9]
 
-	def get_available_digits_for_cell(cell_index: int):
-		cell_row_index = cell_index // 9
-		cell_col_index = cell_index % 9
-		cell_box_index = (cell_row_index//3)*3 + (cell_col_index//3)
+def available_digits(board, index):
+	digits = []
+	for cell_index in incidence[index]:
+		digits = list(set(digits) & set(board[cell_index]))
+	available = list(set([1,2,3,4,5,6,7,8,9]) - set(digits))
+	return available
 
-		#Extract the available digits for the row, column and box of the selected cell
-		available_in_row = board_categorical['available_in_row'][cell_row_index]
-		available_in_col = board_categorical['available_in_col'][cell_col_index]
-		available_in_box = board_categorical['available_in_box'][cell_box_index]
-		print("Available row: ", available_in_row)
-		print("Available col: ",available_in_col)
-		print("Available box: ",available_in_box)
+template_board_np = np.array(template_board)
 
-		#The available digits for the selected cell are only the ones that are available in the three categories, row, column and box.
-		available_in_cell = list(set(available_in_row) & set(available_in_col) & set(available_in_box))
-		return available_in_cell
+#TODO
+def pop_cell(board, index):
+	digit = board[digit]
+	for cell in incidence:
+		cell
 
-	def put_digit_in_board(cell_index: int, digit: int):
-		cell_row_index = cell_index // 9
-		cell_col_index = cell_index % 9
-		cell_box_index = (cell_row_index//3)*3 + (cell_col_index//3)
-		board_numeric[cell_row_index][cell_col_index] = digit
+def swap_cells(board, index_a, index_b):
+	digit_a = board[index_a]
+	digit_b = board[index_b]
+	if digit_a < 1 or digit_a > 9:
+		raise ValueError
+	if digit_b < 1 or digit_b > 9:
+		raise ValueError
+	
+	board[index_a] = digit_b
+	board[index_b] = digit_a
 
-		board_categorical['available_in_row'][cell_row_index].remove(digit)
-		print("Available row: ", board_categorical['available_in_row'][cell_row_index])
-		board_categorical['available_in_col'][cell_col_index].remove(digit)
-		print("Available col: ", board_categorical['available_in_col'][cell_col_index])
-		board_categorical['available_in_box'][cell_box_index].remove(digit)
-		print("Available box: ", board_categorical['available_in_box'][cell_box_index])
+#TODO
+def validate_board(board):
+	conflict = False
+	for cell_index in range(81):
+		board[cell_index]
 
-	def pop_digit_from_board(cell_index: int):
-		print("Popping cell: ", cell_index, end=" ")
-		cell_row_index = cell_index // 9
-		cell_col_index = cell_index % 9
-		cell_box_index = (cell_row_index//3)*3 + (cell_col_index//3)
-		digit = board_numeric[cell_row_index][cell_col_index]
-		board_numeric[cell_row_index][cell_col_index] = 0
-		print("Digit: ", digit)
-
-		board_categorical['available_in_row'][cell_row_index].append(digit)
-		print("Available row: ", board_categorical['available_in_row'][cell_row_index])
-		board_categorical['available_in_col'][cell_col_index].append(digit)
-		print("Available col: ", board_categorical['available_in_col'][cell_col_index])
-		board_categorical['available_in_box'][cell_box_index].append(digit)
-		print("Available box: ", board_categorical['available_in_box'][cell_box_index])
-
-	#From 0 to 80
-
-	#Create a list of indices that represent the order in which the cells will be filled in
-	cell_random_access_list = list(range( 81))
-	rng.shuffle(cell_random_access_list)
-
-	for cell_index in cell_random_access_list:
-		#TODO
-		print("TODO")
-	return board_numeric
+def shuffle_board(board):
+	for cell_index in range(81):
+		random_index = rng.randint(0,80)
+		swap_cells(board, cell_index, random_index)
+	return board
 
 def generate_batch(num):
 	root_seed = 1
@@ -223,6 +164,9 @@ def generate_batch(num):
 
 if __name__ == "__main__":
 	print("Sudoku board generator. Copyright (C) 2024 Álvaro L.G.\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it under the GNU GPL License.")
+	print(template_board_np)
+	random_board = shuffle_board(template_board_np.copy())
+	print(random_board)
 	#generate_batch(10000)
 	#print(generate_board())
 	#generate_incidence_lookup()
